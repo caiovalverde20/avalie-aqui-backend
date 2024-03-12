@@ -4,16 +4,14 @@ public class UserDto {
     private String id;
     private String name;
     private String email;
-    private String token;
 
     public UserDto() {
     }
 
-    public UserDto(String id, String name, String email, String token) {
+    public UserDto(String id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.token = token;
     }
 
     // Getters
@@ -21,16 +19,8 @@ public class UserDto {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getEmail() {
@@ -38,15 +28,17 @@ public class UserDto {
     }
 
     // Setters
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public String getToken() {
-        return token;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
 }

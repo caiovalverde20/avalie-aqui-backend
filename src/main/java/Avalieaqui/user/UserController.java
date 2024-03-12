@@ -1,5 +1,6 @@
 package Avalieaqui.user;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +37,19 @@ public class UserController {
         user.setPassword(encodedPassword);
         User savedUser = userRepository.save(user);
 
-        return new UserDto(savedUser.getId(), savedUser.getName(), savedUser.getEmail(), null);
+        return new UserDto(savedUser.getId(), savedUser.getName(), savedUser.getEmail());
     }
 
     @GetMapping
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getUsers() {
+        List<User> users = userRepository.findAll();
+        List<UserDto> userDtos = new ArrayList<>();
+
+        for (User user : users) {
+            userDtos.add(new UserDto(user.getId(), user.getName(), user.getEmail()));
+        }
+
+        return userDtos;
     }
 
     @PostMapping("/login")
