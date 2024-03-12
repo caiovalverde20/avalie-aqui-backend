@@ -9,7 +9,10 @@ public class DotenvApplicationContextInitializer
 
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {
-        Dotenv dotenv = Dotenv.load();
-        dotenv.entries().forEach(e -> System.setProperty(e.getKey(), e.getValue()));
+        String profile = System.getenv("SPRING_PROFILES_ACTIVE");
+        if (profile == null || !profile.equals("prod")) {
+            Dotenv dotenv = Dotenv.load();
+            dotenv.entries().forEach(e -> System.setProperty(e.getKey(), e.getValue()));
+        }
     }
 }
