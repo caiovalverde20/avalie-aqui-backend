@@ -1,7 +1,9 @@
 package Avalieaqui.user;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -59,7 +61,9 @@ public class UserController {
             String token = jwtUtil.generateToken(user.getEmail());
             user.setToken(token);
             userRepository.save(user);
-            return ResponseEntity.ok(token);
+            Map<String, String> response = new HashMap<>();
+            response.put("token", token);
+            return ResponseEntity.ok(response);        
         } else {
             return ResponseEntity.status(401).body("Credenciais inválidas");
         }
