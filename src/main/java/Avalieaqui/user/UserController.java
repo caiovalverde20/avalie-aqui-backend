@@ -65,7 +65,9 @@ public class UserController {
             response.put("token", token);
             return ResponseEntity.ok(response);        
         } else {
-            return ResponseEntity.status(401).body("Credenciais inválidas");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Credenciais inválidas");
+            return ResponseEntity.status(401).body(response);
         }
     }
 
