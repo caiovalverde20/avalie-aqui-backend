@@ -73,6 +73,8 @@ public class UserController {
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<?> handleDuplicateKeyException(DuplicateKeyException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("Um usuário com esse email já existe.");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Um usuário com esse email já existe.");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 }
