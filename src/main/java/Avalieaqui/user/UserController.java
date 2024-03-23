@@ -1,5 +1,7 @@
 package Avalieaqui.user;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +34,9 @@ public class UserController {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private UserService userService;
 
     @PostMapping
     public UserDto addUser(@RequestBody User user) {
@@ -70,6 +75,18 @@ public class UserController {
             return ResponseEntity.status(401).body(response);
         }
     }
+
+    @PostMapping("/login-google")
+    public ResponseEntity<?> postMethodName(@RequestBody String token) throws GeneralSecurityException, IOException {
+        
+        User loginUser = userService.getUserFromGoogle(token);
+
+            loginUser.setToken(token);
+            userRepository.save(loginUser);
+            Map<String, String> response = new HashMap<>();
+            response.put("token", token);
+            return ResponseEntity.ok(response);        
+        }
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<?> handleDuplicateKeyException(DuplicateKeyException e) {
