@@ -77,16 +77,27 @@ public class UserController {
     }
 
     @PostMapping("/login-google")
-    public ResponseEntity<?> postMethodName(@RequestBody String token) throws GeneralSecurityException, IOException {
+    public ResponseEntity<?> postMethodName(@RequestBody String tokenGoogle) throws GeneralSecurityException, IOException {
         
-        User loginUser = userService.getUserFromGoogle(token);
+        User loginUser = userService.getUserFromGoogle(tokenGoogle);
+        User user = userRepository.findByEmail(loginUser.getEmail());
 
+        if (user != null) {
+            String token = jwtUtil.generateToken(user.getEmail());
+            user.setToken(token);
+            userRepository.save(user);
+            Map<String, String> response = new HashMap<>();
+            response.put("token", token);
+            return ResponseEntity.ok(response);    
+        } else {
+            String token = jwtUtil.generateToken(loginUser.getEmail());
             loginUser.setToken(token);
             userRepository.save(loginUser);
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
-            return ResponseEntity.ok(response);        
-        }
+            return ResponseEntity.ok(response); 
+        }    
+    }
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<?> handleDuplicateKeyException(DuplicateKeyException e) {
