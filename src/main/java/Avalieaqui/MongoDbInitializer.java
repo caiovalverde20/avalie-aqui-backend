@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import Avalieaqui.product.Product;
 import Avalieaqui.user.User;
 
 @Component
