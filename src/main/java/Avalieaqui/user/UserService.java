@@ -24,8 +24,6 @@ public class UserService {
     //! NÃO ALTEREM ESSA FUNÇÃO
     public User getUserFromGoogle(String token) throws GeneralSecurityException, IOException {
 
-        Dotenv dotenv = Dotenv.load();
-
         ApacheHttpTransport transport = new ApacheHttpTransport();
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, gsonFactory)
         // Specify the CLIENT_ID of the app that accesses the backend:
