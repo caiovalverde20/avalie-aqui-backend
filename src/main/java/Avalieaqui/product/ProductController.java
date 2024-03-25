@@ -3,6 +3,7 @@ package Avalieaqui.product;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +35,9 @@ public class ProductController {
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<String> removeProduct(@PathVariable String productId) {
-        Product product = productRepository.findByProductId(productId);
-        if (product != null) {
-            productRepository.delete(product);
+        Optional<Product> productOptional = productRepository.findById(productId);
+        if (productOptional.isPresent()) {
+            productRepository.delete(productOptional.get());
             return ResponseEntity.ok("Produto removido com sucesso.");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado.");
