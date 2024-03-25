@@ -56,6 +56,28 @@ public class ProductController {
         return productDtos;
     }
 
+    @GetMapping("/id/{productId}")
+    public ResponseEntity<?> getProductById(@PathVariable String productId) {
+        Optional<Product> productOptional = productRepository.findById(productId);
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            product.setViews(product.getViews() + 1);
+            productRepository.save(product);
+            return ResponseEntity.ok(new ProductDto(product.getId(), product.getName()));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado.");
+        }
+    }
+
+    @GetMapping("/by-view")
+    public List<Product> getProductsSortedByViews() {
+        List<Product> products = productRepository.findAll();
+        products.sort((p1, p2) -> Integer.compare(p2.getViews(), p1.getViews()));
+        List<ProductDto> productDtos = new ArrayList<>();
+
+        return products;
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleException(Exception e) {
         Map<String, String> response = new HashMap<>();
