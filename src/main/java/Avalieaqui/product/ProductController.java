@@ -45,15 +45,9 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<ProductDto> getProducts() {
+    public List<Product> getProducts() {
         List<Product> products = productRepository.findAll();
-        List<ProductDto> productDtos = new ArrayList<>();
-
-        for (Product product : products) {
-            productDtos.add(new ProductDto(product.getId(), product.getName()));
-        }
-
-        return productDtos;
+        return products;
     }
 
     @GetMapping("/id/{productId}")
@@ -73,7 +67,6 @@ public class ProductController {
     public List<Product> getProductsSortedByViews() {
         List<Product> products = productRepository.findAll();
         products.sort((p1, p2) -> Integer.compare(p2.getViews(), p1.getViews()));
-        List<ProductDto> productDtos = new ArrayList<>();
 
         return products;
     }

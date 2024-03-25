@@ -3,13 +3,16 @@ package Avalieaqui.product;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import Avalieaqui.category.Category;
+
 @Document(collection = "produtos")
 public class Product {
     @Id
     private String id;
     private String name;
-    private String image_link;
+    private String image;
     private int views = 0;
+    private String categoryId;
 
     // Construtores
     public Product() {
@@ -28,12 +31,16 @@ public class Product {
         return name;
     }
 
-    public String getImageLink() {
-        return image_link;
+    public String getImage() {
+        return image;
     }
 
     public int getViews() {
         return views;
+    }
+
+    public String getCategoryId() {
+        return categoryId;
     }
 
     // Setters
@@ -45,11 +52,15 @@ public class Product {
         this.name = name;
     }
 
-    public void setImageLink(String new_image_link) {
-        this.image_link = new_image_link;
+    public void setImageLink(String image) {
+        this.image = image;
     }
 
     public void setViews(int views) {
         this.views = views;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
     }
 }
