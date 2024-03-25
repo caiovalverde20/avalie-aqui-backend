@@ -28,9 +28,8 @@ public class ProductController {
     private ProductRepository productRepository;
 
     @PostMapping
-    public ProductDto addProduct(@RequestBody Product product) {
-        Product savedProduct = productRepository.save(product);
-        return new ProductDto(savedProduct.getId(), savedProduct.getName());
+    public Product addProduct(@RequestBody Product product) {
+        return productRepository.save(product);
     }
 
     @DeleteMapping("/{productId}")
@@ -57,7 +56,7 @@ public class ProductController {
             Product product = productOptional.get();
             product.setViews(product.getViews() + 1);
             productRepository.save(product);
-            return ResponseEntity.ok(new ProductDto(product.getId(), product.getName()));
+            return ResponseEntity.ok(product);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado.");
         }
