@@ -12,7 +12,7 @@ public class Product {
     private String name;
     private String image;
     private int views = 0;
-    private String categoryId;
+    private String categoryId = "3";
 
     // Construtores
     public Product() {
