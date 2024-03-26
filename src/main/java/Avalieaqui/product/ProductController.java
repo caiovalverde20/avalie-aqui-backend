@@ -70,6 +70,15 @@ public class ProductController {
         return products;
     }
 
+    @GetMapping("/by-view/{categoryId}")
+    public ResponseEntity<List<Product>> getProductsByCategorySortedByViews(@PathVariable String categoryId) {
+        List<Product> products = productRepository.findByCategoryIdOrderByViewsDesc(categoryId);
+        if (products.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.ok(products);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleException(Exception e) {
         Map<String, String> response = new HashMap<>();
