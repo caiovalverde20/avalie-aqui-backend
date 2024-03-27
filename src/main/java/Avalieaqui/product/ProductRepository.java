@@ -8,4 +8,7 @@ public interface ProductRepository extends MongoRepository<Product, String> {
 
     @Query(value = "{ 'categoryId': ?0 }", sort = "{ 'views': -1 }")
     List<Product> findByCategoryIdOrderByViewsDesc(String categoryId);
+
+    @Query("{'name': {$regex: ?0, $options: 'i'}}")
+    List<Product> findByNameContainingIgnoreCase(String regex);
 }

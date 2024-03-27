@@ -92,4 +92,16 @@ public class ProductController {
         response.put("message", "Um produto com esse id já existe.");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
+
+    @GetMapping("/search/{term}")
+    public ResponseEntity<List<Product>> searchProductsByTerm(@PathVariable String term) {
+        String sanitizedTerm = term.trim().replaceAll("\\s+", ".*");
+
+        List<Product> products = productRepository.findByNameContainingIgnoreCase(".*" + sanitizedTerm + ".*");
+        if (products.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.ok(products);
+    }
+
 }
