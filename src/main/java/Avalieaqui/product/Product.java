@@ -10,16 +10,15 @@ public class Product {
     @Id
     private String id;
     private String name;
+    private String description;
     private String image;
     private int views = 0;
     private String categoryId = "3";
 
-    // Construtores
-    public Product() {
-    }
-
     public Product(String name) {
         this.name = name;
+        this.image = image;
+        this.description = description;
     }
 
     // Getters
@@ -43,6 +42,10 @@ public class Product {
         return categoryId;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     // Setters
     public void setId(String id) {
         this.id = id;
@@ -58,6 +61,10 @@ public class Product {
 
     public void setViews(int views) {
         this.views = views;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setCategoryId(String categoryId) {
