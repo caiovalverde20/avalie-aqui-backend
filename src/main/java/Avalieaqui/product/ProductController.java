@@ -127,7 +127,7 @@ public class ProductController {
         String userEmail = jwtUtil.getUsernameFromToken(token);
         User user = userRepository.findByEmail(userEmail);
 
-        if (user == null || !user.getAdm()) {
+        if (user == null || !jwtUtil.validateToken(token, user) || !user.getAdm()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Acesso negado."));
         }
 
