@@ -13,6 +13,7 @@ public class User {
     private String email;
     private String password;
     private String token;
+    private boolean adm = false;
 
     // Construtores
     public User() {
@@ -43,6 +44,10 @@ public class User {
 
     public String getToken() {
         return token;
+    }
+
+    public boolean getAdm() {
+        return adm;
     }
 
     // Setters

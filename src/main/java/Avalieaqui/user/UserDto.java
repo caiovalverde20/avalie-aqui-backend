@@ -4,14 +4,16 @@ public class UserDto {
     private String id;
     private String name;
     private String email;
+    private boolean adm;
 
     public UserDto() {
     }
 
-    public UserDto(String id, String name, String email) {
+    public UserDto(String id, String name, String email, boolean adm) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.adm = adm;
     }
 
     // Getters
@@ -25,6 +27,10 @@ public class UserDto {
 
     public String getEmail() {
         return email;
+    }
+
+    public boolean getAdm() {
+        return adm;
     }
 
     // Setters

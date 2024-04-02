@@ -3,6 +3,7 @@ package Avalieaqui.user;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.http.apache.v2.*;	
+
+import Avalieaqui.auth.JwtUtil;
+
+import com.google.api.client.http.apache.v2.*;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -19,18 +23,24 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class UserService {
 
     @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private GsonFactory gsonFactory = new GsonFactory();
 
-    //! NÃO ALTEREM ESSA FUNÇÃO
+    // ! NÃO ALTEREM ESSA FUNÇÃO
     public User getUserFromGoogle(String token) throws GeneralSecurityException, IOException {
 
         ApacheHttpTransport transport = new ApacheHttpTransport();
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, gsonFactory)
-        // Specify the CLIENT_ID of the app that accesses the backend:
-        .setAudience(Collections.singletonList(System.getenv("GOOGLE_CLIENT_ID")))
-        // Or, if multiple clients access the backend:
-        //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
-        .build();
+                // Specify the CLIENT_ID of the app that accesses the backend:
+                .setAudience(Collections.singletonList(System.getenv("GOOGLE_CLIENT_ID")))
+                // Or, if multiple clients access the backend:
+                // .setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
+                .build();
 
         // (Receive idTokenString by HTTPS POST)
 
@@ -57,8 +67,21 @@ public class UserService {
             System.out.println("Invalid ID token.");
         }
 
-
         return null;
     }
-    
+
+    public UserDto editUser(String token, UserDto userDto) {
+        String email = jwtUtil.getUsernameFromToken(token);
+        User user = userRepository.findByEmail(email);
+
+        if (user == null || !jwtUtil.validateToken(token, user)) {
+            return null;
+        }
+
+        user.setName(userDto.getName());
+        user.setEmail(userDto.getEmail());
+        userRepository.save(user);
+
+        return new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm());
+    }
 }
