@@ -15,7 +15,6 @@ public class User {
     private String token;
     private boolean adm = false;
 
-    // Construtores
     public User() {
     }
 

@@ -15,6 +15,9 @@ public class Product {
     private int views = 0;
     private String categoryId = "3";
 
+    public Product() {
+    }
+
     public Product(String name) {
         this.name = name;
         this.image = image;

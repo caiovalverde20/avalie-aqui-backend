@@ -16,6 +16,9 @@ public class Review {
     @CreatedDate
     private LocalDateTime createdAt;
 
+    public Review() {
+    }
+
     public Review(String userId, String productId, int stars, String comment) {
         this.userId = userId;
         this.productId = productId;
