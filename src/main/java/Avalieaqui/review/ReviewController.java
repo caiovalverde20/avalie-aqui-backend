@@ -5,10 +5,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Autowired
     private ReviewService reviewService;
@@ -47,5 +51,23 @@ public class ReviewController {
         successResponse.put("review", review);
 
         return ResponseEntity.ok(successResponse);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Review>> getReviewsByUser(@PathVariable String userId) {
+        List<Review> reviews = reviewRepository.findByUserId(userId);
+        if (reviews.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(reviews);
+    }
+
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<List<Review>> getReviewsByProduct(@PathVariable String productId) {
+        List<Review> reviews = reviewRepository.findByProductId(productId);
+        if (reviews.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(reviews);
     }
 }
