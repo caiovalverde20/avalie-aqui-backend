@@ -40,8 +40,23 @@ public class ProductController {
     private ProductRepository productRepository;
 
     @PostMapping
-    public Product addProduct(@RequestBody Product product) {
-        return productRepository.save(product);
+    public ResponseEntity<?> addProduct(@RequestBody Product product,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Header de autorização incorreto."));
+        }
+
+        String token = authorizationHeader.substring(7);
+        String userEmail = jwtUtil.getUsernameFromToken(token);
+        User user = userRepository.findByEmail(userEmail);
+
+        if (user == null || !jwtUtil.validateToken(token, user) || !user.getAdm()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Acesso negado. Apenas administradores podem adicionar produtos."));
+        }
+
+        Product savedProduct = productRepository.save(product);
+        return ResponseEntity.ok(savedProduct);
     }
 
     @DeleteMapping("/{productId}")
