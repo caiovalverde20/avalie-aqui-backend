@@ -36,4 +36,21 @@ public class ReviewService {
             return reviewRepository.save(review);
         }
     }
+
+    public boolean removeReview(String token, String productId) {
+        String email = jwtUtil.getUsernameFromToken(token);
+        User user = userRepository.findByEmail(email);
+
+        if (user == null || !jwtUtil.validateToken(token, user)) {
+            return false;
+        }
+
+        Review existingReview = reviewRepository.findByUserIdAndProductId(user.getId(), productId);
+        if (existingReview != null) {
+            reviewRepository.delete(existingReview);
+            return true;
+        } else {
+            return false; // Review does not exist
+        }
+    }
 }
