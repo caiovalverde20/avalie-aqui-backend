@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import Avalieaqui.auth.JwtUtil;
 import Avalieaqui.user.User;
-import Avalieaqui.user.UserRepository;
+import Avalieaqui.user.UserService;
 
 @Service
 public class ReviewService {
@@ -13,14 +13,13 @@ public class ReviewService {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private ReviewRepository reviewRepository;
 
     public Review addReview(String token, String productId, int stars, String comment) {
-        String email = jwtUtil.getUsernameFromToken(token);
-        User user = userRepository.findByEmail(email);
+        User user = userService.findUserByToken(token);
 
         if (user == null || !jwtUtil.validateToken(token, user)) {
             return null;
@@ -38,8 +37,7 @@ public class ReviewService {
     }
 
     public boolean removeReview(String token, String productId) {
-        String email = jwtUtil.getUsernameFromToken(token);
-        User user = userRepository.findByEmail(email);
+        User user = userService.findUserByToken(token);
 
         if (user == null || !jwtUtil.validateToken(token, user)) {
             return false;
