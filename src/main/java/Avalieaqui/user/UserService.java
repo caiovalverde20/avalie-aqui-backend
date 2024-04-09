@@ -84,4 +84,14 @@ public class UserService {
 
         return new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm());
     }
+
+    public boolean isAdmin(String token) {
+        String email = jwtUtil.getUsernameFromToken(token);
+        User user = userRepository.findByEmail(email);
+
+        if (user == null || !jwtUtil.validateToken(token, user)) {
+            return false;
+        }
+        return user.getAdm();
+    }
 }
