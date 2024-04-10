@@ -70,6 +70,17 @@ public class UserService {
         return null;
     }
 
+    public User findUserByToken(String token) {
+        String email = jwtUtil.getUsernameFromToken(token);
+        User user = userRepository.findByEmail(email);
+
+        if (user == null || !jwtUtil.validateToken(token, user)) {
+            System.out.println("Usuário não encontrado.");
+            return null;
+        }
+        return user;
+    }
+
     public UserDto editUser(String token, UserDto userDto) {
         String email = jwtUtil.getUsernameFromToken(token);
         User user = userRepository.findByEmail(email);
@@ -94,4 +105,5 @@ public class UserService {
         }
         return user.getAdm();
     }
+
 }
