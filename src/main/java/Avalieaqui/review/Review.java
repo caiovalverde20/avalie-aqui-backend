@@ -13,20 +13,27 @@ public class Review {
     private String productId;
     private int stars;
     private String comment;
+    private String title;
     @CreatedDate
     private LocalDateTime createdAt;
 
     public Review() {
     }
 
-    public Review(String userId, String productId, int stars, String comment) {
+    public Review(String userId, String productId, int stars, String comment, String title) {
         this.userId = userId;
         this.productId = productId;
         this.stars = stars;
         this.comment = comment;
+        this.title = title;
     }
 
     // Getters
+
+    public String getTitle() {
+        return title;
+    }
+
     public String getId() {
         return id;
     }
@@ -52,6 +59,11 @@ public class Review {
     }
 
     // Setters
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    
     public void setId(String id) {
         this.id = id;
     }
