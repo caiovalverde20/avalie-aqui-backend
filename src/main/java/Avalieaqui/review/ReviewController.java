@@ -36,17 +36,19 @@ public class ReviewController {
         String token = authorizationHeader.substring(7);
         int stars;
         String comment;
+        String title;
 
         try {
             stars = Integer.parseInt(reviewData.get("stars").toString());
             comment = reviewData.get("comment").toString();
+            title = reviewData.get("title").toString();
         } catch (NumberFormatException e) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Formato de estrelas inválido.");
             return ResponseEntity.badRequest().body(errorResponse);
         }
 
-        Review review = reviewService.addReview(token, productId, stars, comment);
+        Review review = reviewService.addReview(token, productId, stars, comment, title);
 
         if (review == null) {
             Map<String, String> errorResponse = new HashMap<>();
