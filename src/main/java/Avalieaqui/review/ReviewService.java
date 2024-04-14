@@ -18,7 +18,7 @@ public class ReviewService {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    public Review addReview(String token, String productId, int stars, String comment) {
+    public Review addReview(String token, String productId, int stars, String comment, String title) {
         User user = userService.findUserByToken(token);
 
         if (user == null || !jwtUtil.validateToken(token, user)) {
@@ -29,9 +29,10 @@ public class ReviewService {
         if (existingReview != null) {
             existingReview.setStars(stars);
             existingReview.setComment(comment);
+            existingReview.setTitle(title);
             return null;
         } else {
-            Review review = new Review(user.getId(), productId, stars, comment);
+            Review review = new Review(user.getId(), productId, stars, comment, title);
             return reviewRepository.save(review);
         }
     }
