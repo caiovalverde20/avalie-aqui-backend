@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import Avalieaqui.auth.JwtUtil;
 import Avalieaqui.user.User;
 import Avalieaqui.user.UserRepository;
+import Avalieaqui.user.UserService;
 
 @Service
 public class ReviewService {
@@ -18,9 +19,12 @@ public class ReviewService {
     private UserRepository userRepository;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private ReviewRepository reviewRepository;
 
-    public Review addReview(String token, String productId, int stars, String comment) {
+    public Review addReview(String token, String productId, int stars, String comment, String title) {
         String email = jwtUtil.getUsernameFromToken(token);
         User user = userRepository.findByEmail(email);
 
@@ -34,8 +38,24 @@ public class ReviewService {
             existingReview.setComment(comment);
             return null;
         } else {
-            Review review = new Review(user.getId(), productId, stars, comment);
+            Review review = new Review(user.getId(), productId, stars, comment, title);
             return reviewRepository.save(review);
+        }
+    }
+
+    public boolean removeReview(String token, String productId) {
+        User user = userService.findUserByToken(token);
+
+        if (user == null || !jwtUtil.validateToken(token, user)) {
+            return false;
+        }
+
+        Review existingReview = reviewRepository.findByUserIdAndProductId(user.getId(), productId);
+        if (existingReview != null) {
+            reviewRepository.delete(existingReview);
+            return true;
+        } else {
+            return false; // Review does not exist
         }
     }
 
