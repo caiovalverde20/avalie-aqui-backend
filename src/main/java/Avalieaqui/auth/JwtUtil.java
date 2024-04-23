@@ -21,7 +21,7 @@ public class JwtUtil {
     private UserRepository userRepository;
 
     private String secret = "MySecretKey";
-    private long expiration = 604800000L; // 7 dias
+    private long expiration = 7 * 30_436_875L * 24 * 60 * 60 * 1000; // 7 meses
 
     public String generateToken(String username) {
         return Jwts.builder()
@@ -50,6 +50,12 @@ public class JwtUtil {
         } catch (ExpiredJwtException | SignatureException e) {
             return false;
         }
+    }
+
+    public String getUserIdFromToken(String token) {
+        String email = getUsernameFromToken(token);
+        User user = userRepository.findByEmail(email);
+        return user != null ? user.getId() : null;
     }
 
 }

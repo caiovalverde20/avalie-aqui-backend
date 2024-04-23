@@ -70,4 +70,30 @@ public class ReviewController {
         }
         return ResponseEntity.ok(reviews);
     }
+
+    @PostMapping("/like/{reviewId}")
+    public ResponseEntity<?> toggleLike(@PathVariable String reviewId,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.substring(7);
+        Review updatedReview = reviewService.toggleLike(token, reviewId);
+        if (updatedReview == null) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Token ou review invalida");
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+        return ResponseEntity.ok(updatedReview);
+    }
+
+    @PostMapping("/dislike/{reviewId}")
+    public ResponseEntity<?> toggleDislike(@PathVariable String reviewId,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.substring(7);
+        Review updatedReview = reviewService.toggleDislike(token, reviewId);
+        if (updatedReview == null) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Token ou review invalida");
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+        return ResponseEntity.ok(updatedReview);
+    }
 }

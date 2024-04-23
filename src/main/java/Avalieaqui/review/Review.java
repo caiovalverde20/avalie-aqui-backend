@@ -4,6 +4,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Document(collection = "reviews")
 public class Review {
@@ -15,6 +17,8 @@ public class Review {
     private String comment;
     @CreatedDate
     private LocalDateTime createdAt;
+    private Set<String> likes = new HashSet<>();
+    private Set<String> dislikes = new HashSet<>();
 
     public Review() {
     }
@@ -51,6 +55,14 @@ public class Review {
         return createdAt;
     }
 
+    public Set<String> getLikes() {
+        return likes;
+    }
+
+    public Set<String> getDislikes() {
+        return dislikes;
+    }
+
     // Setters
     public void setId(String id) {
         this.id = id;
@@ -74,5 +86,13 @@ public class Review {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public void setLikes(Set<String> likes) {
+        this.likes = likes;
+    }
+
+    public void setDislikes(Set<String> dislikes) {
+        this.dislikes = dislikes;
     }
 }

@@ -1,5 +1,7 @@
 package Avalieaqui.review;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import Avalieaqui.auth.JwtUtil;
@@ -35,5 +37,37 @@ public class ReviewService {
             Review review = new Review(user.getId(), productId, stars, comment);
             return reviewRepository.save(review);
         }
+    }
+
+    public Review toggleLike(String token, String reviewId) {
+        String userId = jwtUtil.getUserIdFromToken(token);
+        Optional<Review> reviewOpt = reviewRepository.findById(reviewId);
+        if (reviewOpt.isPresent()) {
+            Review review = reviewOpt.get();
+            if (review.getLikes().contains(userId)) {
+                review.getLikes().remove(userId);
+            } else {
+                review.getLikes().add(userId);
+                review.getDislikes().remove(userId);
+            }
+            return reviewRepository.save(review);
+        }
+        return null;
+    }
+
+    public Review toggleDislike(String token, String reviewId) {
+        String userId = jwtUtil.getUserIdFromToken(token);
+        Optional<Review> reviewOpt = reviewRepository.findById(reviewId);
+        if (reviewOpt.isPresent()) {
+            Review review = reviewOpt.get();
+            if (review.getDislikes().contains(userId)) {
+                review.getDislikes().remove(userId);
+            } else {
+                review.getDislikes().add(userId);
+                review.getLikes().remove(userId);
+            }
+            return reviewRepository.save(review);
+        }
+        return null;
     }
 }
