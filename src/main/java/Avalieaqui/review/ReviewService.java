@@ -1,6 +1,8 @@
 package Avalieaqui.review;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -89,5 +91,15 @@ public class ReviewService {
             return reviewRepository.save(review);
         }
         return null;
+    }
+
+    public List<ReviewDto> getReviewsWithUserDetailsByProduct(String productId) {
+        List<Review> reviews = reviewRepository.findByProductId(productId);
+        return reviews.stream().map(review -> {
+            User user = userRepository.findById(review.getUserId()).orElse(null);
+            String userName = user != null ? user.getName() : "Unknown";
+            return new ReviewDto(review.getId(), review.getUserId(), userName, review.getProductId(), review.getStars(),
+                    review.getComment(), review.getCreatedAt());
+        }).collect(Collectors.toList());
     }
 }

@@ -103,12 +103,12 @@ public class ReviewController {
     }
 
     @GetMapping("/product/{productId}")
-    public ResponseEntity<List<Review>> getReviewsByProduct(@PathVariable String productId) {
-        List<Review> reviews = reviewRepository.findByProductId(productId);
-        if (reviews.isEmpty()) {
+    public ResponseEntity<?> getReviewsByProduct(@PathVariable String productId) {
+        List<ReviewDto> reviewDTOs = reviewService.getReviewsWithUserDetailsByProduct(productId);
+        if (reviewDTOs.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(reviews);
+        return ResponseEntity.ok(reviewDTOs);
     }
 
     @PostMapping("/like/{reviewId}")
