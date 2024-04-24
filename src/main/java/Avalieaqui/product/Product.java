@@ -14,6 +14,7 @@ public class Product {
     private String image;
     private int views = 0;
     private String categoryId = "3";
+    private String specification;
 
     public Product() {
     }
@@ -49,6 +50,10 @@ public class Product {
         return description;
     }
 
+    public String getSpecification() {
+        return specification;
+    }
+
     // Setters
     public void setId(String id) {
         this.id = id;
@@ -72,5 +77,9 @@ public class Product {
 
     public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public void setSpecification(String specification) {
+        this.specification = specification;
     }
 }
