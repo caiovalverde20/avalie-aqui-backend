@@ -8,19 +8,23 @@ public class ReviewDto {
     private String userName;
     private String productId;
     private int stars;
+    private String title;
     private String comment;
     private LocalDateTime createdAt;
 
-    public ReviewDto(String id, String userId, String userName, String productId, int stars, String comment, LocalDateTime createdAt) {
+    public ReviewDto(String id, String userId, String userName, String productId, int stars, String title,
+            String comment, LocalDateTime createdAt) {
         this.id = id;
         this.userId = userId;
         this.userName = userName;
         this.productId = productId;
         this.stars = stars;
+        this.title = title;
         this.comment = comment;
         this.createdAt = createdAt;
     }
 
+    // Getters
     public String getId() {
         return id;
     }
@@ -39,6 +43,10 @@ public class ReviewDto {
 
     public int getStars() {
         return stars;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public String getComment() {

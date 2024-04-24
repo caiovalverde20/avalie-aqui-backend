@@ -99,7 +99,7 @@ public class ReviewService {
             User user = userRepository.findById(review.getUserId()).orElse(null);
             String userName = user != null ? user.getName() : "Unknown";
             return new ReviewDto(review.getId(), review.getUserId(), userName, review.getProductId(), review.getStars(),
-                    review.getComment(), review.getCreatedAt());
+                    review.getTitle(), review.getComment(), review.getCreatedAt());
         }).collect(Collectors.toList());
     }
 }
