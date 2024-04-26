@@ -1,6 +1,7 @@
 package Avalieaqui.review;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 public class ReviewDto {
     private String id;
@@ -11,9 +12,11 @@ public class ReviewDto {
     private String title;
     private String comment;
     private LocalDateTime createdAt;
+    private Set<String> likes;
+    private Set<String> dislikes;
 
     public ReviewDto(String id, String userId, String userName, String productId, int stars, String title,
-            String comment, LocalDateTime createdAt) {
+            String comment, LocalDateTime createdAt, Set<String> likes, Set<String> dislikes) {
         this.id = id;
         this.userId = userId;
         this.userName = userName;
@@ -22,6 +25,8 @@ public class ReviewDto {
         this.title = title;
         this.comment = comment;
         this.createdAt = createdAt;
+        this.likes = likes;
+        this.dislikes = dislikes;
     }
 
     // Getters
@@ -55,5 +60,13 @@ public class ReviewDto {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public Set<String> getLikes() {
+        return likes;
+    }
+
+    public Set<String> getDislikes() {
+        return dislikes;
     }
 }
