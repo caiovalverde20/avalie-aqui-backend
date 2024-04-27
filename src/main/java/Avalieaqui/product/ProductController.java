@@ -50,9 +50,15 @@ public class ProductController {
         String userEmail = jwtUtil.getUsernameFromToken(token);
         User user = userRepository.findByEmail(userEmail);
 
-        if (user == null || !jwtUtil.validateToken(token, user) || !user.getAdm()) {
+        if (user == null || !jwtUtil.validateToken(token, user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("error", "Acesso negado. Apenas administradores podem adicionar produtos."));
+                    .body(Map.of("token error", "Token inválido"));
+        }
+
+        if (!user.getAdm()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("permission error",
+                            "Acesso negado. Apenas administradores podem adicionar produtos."));
         }
 
         Product savedProduct = productRepository.save(product);
@@ -142,8 +148,13 @@ public class ProductController {
         String userEmail = jwtUtil.getUsernameFromToken(token);
         User user = userRepository.findByEmail(userEmail);
 
-        if (user == null || !jwtUtil.validateToken(token, user) || !user.getAdm()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Acesso negado."));
+        if (user == null || !jwtUtil.validateToken(token, user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("token error", "Token inválido"));
+        }
+
+        if (!user.getAdm()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("permission error", "Acesso negado. user precisa ser adm"));
         }
 
         Optional<Product> productOptional = productRepository.findById(productId);

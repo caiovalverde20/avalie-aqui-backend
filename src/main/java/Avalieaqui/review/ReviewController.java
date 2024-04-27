@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import Avalieaqui.user.UserService;
+import Avalieaqui.auth.JwtUtil;
+import Avalieaqui.user.User;
+import Avalieaqui.user.UserRepository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +22,12 @@ public class ReviewController {
     private ReviewRepository reviewRepository;
 
     @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private ReviewService reviewService;
 
     @Autowired
@@ -28,12 +37,18 @@ public class ReviewController {
     public ResponseEntity<?> addReview(@PathVariable String productId, @RequestBody Map<String, Object> reviewData,
             @RequestHeader("Authorization") String authorizationHeader) {
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Header incorreto.");
-            return ResponseEntity.badRequest().body(errorResponse);
+            return ResponseEntity.badRequest().body(Map.of("error", "Header de autorização incorreto."));
         }
 
         String token = authorizationHeader.substring(7);
+        String email = jwtUtil.getUsernameFromToken(token);
+        User user = userRepository.findByEmail(email);
+
+        if (user == null || !jwtUtil.validateToken(token, user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("token error", "Token inválido"));
+        }
+
         int stars;
         String comment;
         String title;
@@ -42,24 +57,22 @@ public class ReviewController {
             stars = Integer.parseInt(reviewData.get("stars").toString());
             comment = reviewData.get("comment").toString();
             title = reviewData.get("title").toString();
-        } catch (NumberFormatException e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Formato de estrelas inválido.");
-            return ResponseEntity.badRequest().body(errorResponse);
+        } catch (NumberFormatException | NullPointerException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Dados de review inválidos ou incompletos."));
         }
 
-        Review review = reviewService.addReview(token, productId, stars, comment, title);
-
-        if (review == null) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Token inválido ou user já tem uma review nesse produto.");
-            return ResponseEntity.badRequest().body(errorResponse);
+        Review existingReview = reviewRepository.findByUserIdAndProductId(user.getId(), productId);
+        if (existingReview != null) {
+            existingReview.setStars(stars);
+            existingReview.setComment(comment);
+            existingReview.setTitle(title);
+            reviewRepository.save(existingReview);
+            return ResponseEntity.ok(Map.of("message", "Review atualizada com sucesso!", "review", existingReview));
+        } else {
+            Review newReview = new Review(user.getId(), productId, stars, comment, title);
+            reviewRepository.save(newReview);
+            return ResponseEntity.ok(Map.of("message", "Review adicionada com sucesso!", "review", newReview));
         }
-
-        Map<String, Object> successResponse = new HashMap<>();
-        successResponse.put("review", review);
-
-        return ResponseEntity.ok(successResponse);
     }
 
     @DeleteMapping("/{productId}")
@@ -114,7 +127,19 @@ public class ReviewController {
     @PostMapping("/like/{reviewId}")
     public ResponseEntity<?> toggleLike(@PathVariable String reviewId,
             @RequestHeader("Authorization") String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Header de autorização incorreto."));
+        }
+
         String token = authorizationHeader.substring(7);
+        String email = jwtUtil.getUsernameFromToken(token);
+        User user = userRepository.findByEmail(email);
+
+        if (user == null || !jwtUtil.validateToken(token, user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("token error", "Token inválido"));
+        }
+
         Review updatedReview = reviewService.toggleLike(token, reviewId);
         if (updatedReview == null) {
             Map<String, String> errorResponse = new HashMap<>();
@@ -127,7 +152,19 @@ public class ReviewController {
     @PostMapping("/dislike/{reviewId}")
     public ResponseEntity<?> toggleDislike(@PathVariable String reviewId,
             @RequestHeader("Authorization") String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Header de autorização incorreto."));
+        }
+
         String token = authorizationHeader.substring(7);
+        String email = jwtUtil.getUsernameFromToken(token);
+        User user = userRepository.findByEmail(email);
+
+        if (user == null || !jwtUtil.validateToken(token, user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("token error", "Token inválido"));
+        }
+
         Review updatedReview = reviewService.toggleDislike(token, reviewId);
         if (updatedReview == null) {
             Map<String, String> errorResponse = new HashMap<>();
