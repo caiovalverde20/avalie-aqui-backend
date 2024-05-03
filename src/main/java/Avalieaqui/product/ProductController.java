@@ -1,5 +1,6 @@
 package Avalieaqui.product;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +21,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import Avalieaqui.StorageService;
 import Avalieaqui.auth.JwtUtil;
 import Avalieaqui.user.User;
 import Avalieaqui.user.UserRepository;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 @RestController
 @RequestMapping("/products")
@@ -39,11 +45,20 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private StorageService storageService;
+
     @PostMapping
-    public ResponseEntity<?> addProduct(@RequestBody Product product,
+    public ResponseEntity<?> addProduct(
+            @RequestPart("image") MultipartFile imageFile,
+            @RequestParam("name") String name,
+            @RequestParam("categoryId") String categoryId,
+            @RequestParam("description") String description,
+            @RequestParam("specification") String specification,
             @RequestHeader("Authorization") String authorizationHeader) {
+
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Header de autorização incorreto."));
+            return ResponseEntity.badRequest().body("Header de autorização incorreto.");
         }
 
         String token = authorizationHeader.substring(7);
@@ -61,8 +76,20 @@ public class ProductController {
                             "Acesso negado. Apenas administradores podem adicionar produtos."));
         }
 
-        Product savedProduct = productRepository.save(product);
-        return ResponseEntity.ok(savedProduct);
+        try {
+            String imageUrl = storageService.uploadFile(imageFile);
+            Product product = new Product();
+            product.setName(name);
+            product.setCategoryId(categoryId);
+            product.setDescription(description);
+            product.setSpecification(specification);
+            product.setImageLink(imageUrl);
+            Product savedProduct = productRepository.save(product);
+            return ResponseEntity.ok(savedProduct);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("upload error", "Erro ao fazer upload da imagem"));
+        }
     }
 
     @DeleteMapping("/{productId}")
@@ -112,12 +139,13 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleException(Exception e) {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Ocorreu um erro ao processar a solicitação.");
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-    }
+    // @ExceptionHandler(Exception.class)
+    // public ResponseEntity<?> handleException(Exception e) {
+    // Map<String, String> response = new HashMap<>();
+    // response.put("message", "Ocorreu um erro ao processar a solicitação.");
+    // return
+    // ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    // }
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<?> handleDuplicateKeyException(DuplicateKeyException e) {
