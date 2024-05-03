@@ -62,6 +62,20 @@ public class UserController {
         return userDtos;
     }
 
+    @GetMapping("/id/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable String id) {
+        User user = userRepository.findById(id).orElse(null);
+
+        if (user == null) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Usuário não encontrado.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+
+        UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm());
+        return ResponseEntity.ok(userDto);
+    }
+
     @PutMapping("/edit")
     public ResponseEntity<?> editUser(@RequestBody UserDto userDto,
             @RequestHeader("Authorization") String authorizationHeader) {
@@ -110,10 +124,10 @@ public class UserController {
             throws GeneralSecurityException, IOException {
 
         User loginUser = userService.getUserFromGoogle(tokenGoogle);
-        try{
+        try {
             User user = userRepository.findByEmail(loginUser.getEmail());
             UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm());
-    
+
             String token = jwtUtil.generateToken(user.getEmail());
             user.setToken(token);
             userRepository.save(user);
@@ -121,9 +135,9 @@ public class UserController {
             response.put("token", token);
             response.put("user", userDto);
             return ResponseEntity.ok(response);
-        }
-        catch (NullPointerException e) {
-            UserDto userDto = new UserDto(loginUser.getId(), loginUser.getName(), loginUser.getEmail(), loginUser.getAdm());
+        } catch (NullPointerException e) {
+            UserDto userDto = new UserDto(loginUser.getId(), loginUser.getName(), loginUser.getEmail(),
+                    loginUser.getAdm());
             String token = jwtUtil.generateToken(loginUser.getEmail());
             loginUser.setToken(token);
             userRepository.save(loginUser);
