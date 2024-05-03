@@ -8,10 +8,10 @@ public class UserDto {
     private String email;
     private boolean adm;
     private String cpf;
-    private String cidade;
-    private String estado;
-    private String genero;
-    private Date nascimento;
+    private String city;
+    private String state;
+    private String gender;
+    private Date birth;
 
     public UserDto() {
     }
@@ -44,20 +44,20 @@ public class UserDto {
         return cpf;
     }
 
-    public String getCidade() {
-        return cidade;
+    public String getCity() {
+        return city;
     }
 
-    public String getEstado() {
-        return estado;
+    public String getState() {
+        return state;
     }
 
-    public String getGenero() {
-        return genero;
+    public String getGender() {
+        return gender;
     }
 
-    public Date getNascimento() {
-        return nascimento;
+    public Date getBirth() {
+        return birth;
     }
 
     // Setters
@@ -78,20 +78,20 @@ public class UserDto {
         this.cpf = cpf;
     }
 
-    public void setCidade(String cidade) {
-        this.cidade = cidade;
+    public void setCity(String city) {
+        this.city = city;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setState(String state) {
+        this.state = state;
     }
 
-    public void setGenero(String genero) {
-        this.genero = genero;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
-    public void setNascimento(Date nascimento) {
-        this.nascimento = nascimento;
+    public void setBirth(Date birth) {
+        this.birth = birth;
     }
 
 }
