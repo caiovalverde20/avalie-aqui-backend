@@ -110,10 +110,10 @@ public class UserController {
             throws GeneralSecurityException, IOException {
 
         User loginUser = userService.getUserFromGoogle(tokenGoogle);
-        User user = userRepository.findByEmail(loginUser.getEmail());
-        UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm());
-
-        if (user != null) {
+        try{
+            User user = userRepository.findByEmail(loginUser.getEmail());
+            UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm());
+    
             String token = jwtUtil.generateToken(user.getEmail());
             user.setToken(token);
             userRepository.save(user);
@@ -121,7 +121,9 @@ public class UserController {
             response.put("token", token);
             response.put("user", userDto);
             return ResponseEntity.ok(response);
-        } else {
+        }
+        catch (NullPointerException e) {
+            UserDto userDto = new UserDto(loginUser.getId(), loginUser.getName(), loginUser.getEmail(), loginUser.getAdm());
             String token = jwtUtil.generateToken(loginUser.getEmail());
             loginUser.setToken(token);
             userRepository.save(loginUser);
