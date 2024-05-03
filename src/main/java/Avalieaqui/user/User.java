@@ -20,6 +20,7 @@ public class User {
     private String city;
     private String state;
     private String gender;
+    private String phone;
     private Date birth;
 
     public User() {
@@ -76,6 +77,10 @@ public class User {
         return birth;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
     // Setters
     public void setId(String id) {
         this.id = id;
@@ -115,5 +120,9 @@ public class User {
 
     public void setBirth(Date birth) {
         this.birth = birth;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

@@ -12,6 +12,7 @@ public class UserDto {
     private String state;
     private String gender;
     private Date birth;
+    private String phone;
 
     public UserDto() {
     }
@@ -60,6 +61,10 @@ public class UserDto {
         return birth;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
     // Setters
 
     public void setId(String id) {
@@ -92,6 +97,10 @@ public class UserDto {
 
     public void setBirth(Date birth) {
         this.birth = birth;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
 }
