@@ -1,5 +1,7 @@
 package Avalieaqui.user;
 
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -14,6 +16,11 @@ public class User {
     private String password;
     private String token;
     private boolean adm = false;
+    private String cpf;
+    private String cidade;
+    private String estado;
+    private String genero;
+    private Date nascimento;
 
     public User() {
     }
@@ -49,6 +56,26 @@ public class User {
         return adm;
     }
 
+    public String getCpf() {
+        return cpf;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public String getGenero() {
+        return genero;
+    }
+
+    public Date getNascimento() {
+        return nascimento;
+    }
+
     // Setters
     public void setId(String id) {
         this.id = id;
@@ -68,5 +95,25 @@ public class User {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public void setGenero(String genero) {
+        this.genero = genero;
+    }
+
+    public void setNascimento(Date nascimento) {
+        this.nascimento = nascimento;
     }
 }
