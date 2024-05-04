@@ -15,6 +15,7 @@ public class Product {
     private int views = 0;
     private String categoryId = "3";
     private String specification;
+    private double average;
 
     public Product() {
     }
@@ -54,6 +55,10 @@ public class Product {
         return specification;
     }
 
+    public double getAverage() {
+        return average;
+    }
+
     // Setters
     public void setId(String id) {
         this.id = id;
@@ -81,5 +86,9 @@ public class Product {
 
     public void setSpecification(String specification) {
         this.specification = specification;
+    }
+
+    public void setAverage(double average) {
+        this.average = average;
     }
 }

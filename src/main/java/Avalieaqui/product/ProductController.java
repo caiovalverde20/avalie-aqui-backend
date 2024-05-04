@@ -27,6 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import Avalieaqui.StorageService;
 import Avalieaqui.auth.JwtUtil;
+import Avalieaqui.review.Review;
+import Avalieaqui.review.ReviewRepository;
 import Avalieaqui.user.User;
 import Avalieaqui.user.UserRepository;
 import jakarta.validation.Valid;
@@ -47,6 +49,9 @@ public class ProductController {
 
     @Autowired
     private StorageService storageService;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @PostMapping
     public ResponseEntity<?> addProduct(
@@ -136,16 +141,17 @@ public class ProductController {
         if (products.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+
+        for (Product product : products) {
+            List<Review> reviews = reviewRepository.findByProductId(product.getId());
+            if (!reviews.isEmpty()) {
+                double average = reviews.stream().mapToInt(Review::getStars).average().orElse(0.0);
+                product.setAverage(average);
+            }
+        }
+
         return ResponseEntity.ok(products);
     }
-
-    // @ExceptionHandler(Exception.class)
-    // public ResponseEntity<?> handleException(Exception e) {
-    // Map<String, String> response = new HashMap<>();
-    // response.put("message", "Ocorreu um erro ao processar a solicitação.");
-    // return
-    // ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-    // }
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<?> handleDuplicateKeyException(DuplicateKeyException e) {
