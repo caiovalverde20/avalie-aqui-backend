@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,23 +122,45 @@ public class ProductController {
             Product product = productOptional.get();
             product.setViews(product.getViews() + 1);
             productRepository.save(product);
+
+            List<Review> reviews = reviewRepository.findByProductId(product.getId());
+            if (!reviews.isEmpty()) {
+                double average = reviews.stream()
+                        .mapToInt(Review::getStars)
+                        .average()
+                        .orElse(0.0);
+                product.setAverage(average);
+            }
+
             return ResponseEntity.ok(product);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado.");
         }
     }
 
-    @GetMapping("/by-view")
-    public List<Product> getProductsSortedByViews() {
+    @GetMapping("/by-view/{qnt}")
+    public List<Product> getProductsSortedByViews(@PathVariable int qnt) {
         List<Product> products = productRepository.findAll();
         products.sort((p1, p2) -> Integer.compare(p2.getViews(), p1.getViews()));
+        products = products.stream().limit(qnt).collect(Collectors.toList());
+
+        for (Product product : products) {
+            List<Review> reviews = reviewRepository.findByProductId(product.getId());
+            if (!reviews.isEmpty()) {
+                double average = reviews.stream().mapToInt(Review::getStars).average().orElse(0.0);
+                product.setAverage(average);
+            }
+        }
 
         return products;
     }
 
-    @GetMapping("/by-view/{categoryId}")
-    public ResponseEntity<List<Product>> getProductsByCategorySortedByViews(@PathVariable String categoryId) {
+    @GetMapping("/by-view/{categoryId}/{qnt}")
+    public ResponseEntity<List<Product>> getProductsByCategorySortedByViews(@PathVariable String categoryId,
+            @PathVariable int qnt) {
         List<Product> products = productRepository.findByCategoryIdOrderByViewsDesc(categoryId);
+        products = products.stream().limit(qnt).collect(Collectors.toList());
+
         if (products.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
