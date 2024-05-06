@@ -15,7 +15,7 @@ public class User {
     private String email;
     private String password;
     private String token;
-    private boolean adm = false;
+    private boolean adm = true;
     private String cpf;
     private String city;
     private String state;
