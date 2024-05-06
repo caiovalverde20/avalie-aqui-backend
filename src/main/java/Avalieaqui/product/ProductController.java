@@ -195,10 +195,15 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<?> editProduct(@PathVariable String productId, @RequestBody Product productDetails,
+    public ResponseEntity<?> editProduct(@PathVariable String productId,
+            @RequestPart("image") MultipartFile imageFile,
+            @RequestParam("name") String name,
+            @RequestParam("categoryId") String categoryId,
+            @RequestParam("description") String description,
+            @RequestParam("specification") String specification,
             @RequestHeader("Authorization") String authorizationHeader) {
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Header incorreto."));
+            return ResponseEntity.badRequest().body("Header de autorização incorreto.");
         }
 
         String token = authorizationHeader.substring(7);
@@ -206,27 +211,34 @@ public class ProductController {
         User user = userRepository.findByEmail(userEmail);
 
         if (user == null || !jwtUtil.validateToken(token, user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("token error", "Token inválido"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("token error", "Token inválido"));
         }
 
         if (!user.getAdm()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("permission error", "Acesso negado. user precisa ser adm"));
+                    .body(Map.of("permission error", "Acesso negado. Apenas administradores podem editar produtos."));
         }
 
         Optional<Product> productOptional = productRepository.findById(productId);
         if (!productOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Produto não encontrado."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado.");
         }
 
-        Product product = productOptional.get();
-        product.setName(productDetails.getName());
-        product.setImageLink(productDetails.getImage());
-        product.setCategoryId(productDetails.getCategoryId());
-
-        productRepository.save(product);
-
-        return ResponseEntity.ok().body(Map.of("message", "Produto atualizado com sucesso."));
+        try {
+            String imageUrl = storageService.uploadFile(imageFile);
+            Product product = productOptional.get();
+            product.setName(name);
+            product.setCategoryId(categoryId);
+            product.setDescription(description);
+            product.setSpecification(specification);
+            product.setImageLink(imageUrl);
+            productRepository.save(product);
+            return ResponseEntity.ok().body(Map.of("message", "Produto atualizado com sucesso."));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao fazer upload da imagem");
+        }
     }
 
 }
