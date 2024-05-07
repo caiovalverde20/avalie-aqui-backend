@@ -99,13 +99,13 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
-    public ResponseEntity<String> removeProduct(@PathVariable String productId) {
+    public ResponseEntity<?> removeProduct(@PathVariable String productId) {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (productOptional.isPresent()) {
             productRepository.delete(productOptional.get());
-            return ResponseEntity.ok("Produto removido com sucesso.");
+            return ResponseEntity.ok(Map.of("message","Produto removido com sucesso."));
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error","Produto não encontrado."));
         }
     }
 
