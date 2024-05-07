@@ -104,14 +104,13 @@ public class UserController {
     public ResponseEntity<?> loginUser(@RequestBody Map<String, String> loginInfo) {
         String userIdentifier = loginInfo.get("user");
         String password = loginInfo.get("password");
-    
-        User user = userIdentifier.contains("@") ? 
-                    userRepository.findByEmail(userIdentifier) : 
-                    userRepository.findByPhone(userIdentifier);
-    
+
+        User user = userIdentifier.contains("@") ? userRepository.findByEmail(userIdentifier)
+                : userRepository.findByPhone(userIdentifier);
+
         if (user != null && bCryptPasswordEncoder.matches(password, user.getPassword())) {
             UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm());
-            String token = jwtUtil.generateToken(user.getEmail()); // Considerar gerar token com telefone também se necessário
+            String token = jwtUtil.generateToken(user.getEmail());
             user.setToken(token);
             userRepository.save(user);
             Map<String, Object> response = new HashMap<>();
@@ -124,7 +123,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
-    
 
     @PostMapping("/login-google")
     public ResponseEntity<?> postMethodName(@RequestBody String tokenGoogle)
