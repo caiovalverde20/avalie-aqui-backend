@@ -102,10 +102,13 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User loginUser) {
-        User user = userRepository.findByEmail(loginUser.getEmail());
+        User user = userRepository.findByEmailOrPhone(loginUser.getEmail(), loginUser.getPhone());
+
         if (user != null && bCryptPasswordEncoder.matches(loginUser.getPassword(), user.getPassword())) {
             UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm());
-            String token = jwtUtil.generateToken(user.getEmail());
+            String token = jwtUtil.generateToken(user.getEmail()); // Aqui você poderia considerar se deveria usar o
+                                                                   // telefone no token se o login foi feito por
+                                                                   // telefone.
             user.setToken(token);
             userRepository.save(user);
             Map<String, Object> response = new HashMap<>();
@@ -115,7 +118,7 @@ public class UserController {
         } else {
             Map<String, String> response = new HashMap<>();
             response.put("message", "Credenciais inválidas");
-            return ResponseEntity.status(401).body(response);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
 

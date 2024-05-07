@@ -20,6 +20,7 @@ public class User {
     private String city;
     private String state;
     private String gender;
+    @Indexed(unique = true)
     private String phone;
     private Date birth;
 
