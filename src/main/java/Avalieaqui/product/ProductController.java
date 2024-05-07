@@ -99,7 +99,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
-    public ResponseEntity<String> removeProduct(@PathVariable String productId) {
+    public ResponseEntity<?> removeProduct(@PathVariable String productId) {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (productOptional.isPresent()) {
             productRepository.delete(productOptional.get());
