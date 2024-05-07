@@ -196,7 +196,7 @@ public class ProductController {
 
     @PutMapping("/{productId}")
     public ResponseEntity<?> editProduct(@PathVariable String productId,
-            @RequestPart("image") MultipartFile imageFile,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile,
             @RequestParam("name") String name,
             @RequestParam("categoryId") String categoryId,
             @RequestParam("description") String description,
