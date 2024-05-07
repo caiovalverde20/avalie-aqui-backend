@@ -103,9 +103,9 @@ public class ProductController {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (productOptional.isPresent()) {
             productRepository.delete(productOptional.get());
-            return ResponseEntity.ok(Map.of("message","Produto removido com sucesso."));
+            return ResponseEntity.ok(Map.of("message", "Produto removido com sucesso."));
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error","Produto não encontrado."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Produto não encontrado."));
         }
     }
 
@@ -225,20 +225,24 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado.");
         }
 
-        try {
-            String imageUrl = storageService.uploadFile(imageFile);
-            Product product = productOptional.get();
-            product.setName(name);
-            product.setCategoryId(categoryId);
-            product.setDescription(description);
-            product.setSpecification(specification);
-            product.setImageLink(imageUrl);
-            productRepository.save(product);
-            return ResponseEntity.ok().body(Map.of("message", "Produto atualizado com sucesso."));
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro ao fazer upload da imagem");
+        Product product = productOptional.get();
+        product.setName(name);
+        product.setCategoryId(categoryId);
+        product.setDescription(description);
+        product.setSpecification(specification);
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                String imageUrl = storageService.uploadFile(imageFile);
+                product.setImageLink(imageUrl);
+            } catch (IOException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Erro ao fazer upload da imagem");
+            }
         }
+
+        productRepository.save(product);
+        return ResponseEntity.ok().body(Map.of("message", "Produto atualizado com sucesso."));
     }
 
 }
