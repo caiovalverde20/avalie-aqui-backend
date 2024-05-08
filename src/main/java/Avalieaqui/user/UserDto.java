@@ -24,6 +24,20 @@ public class UserDto {
         this.adm = adm;
     }
 
+    public UserDto(String id, String name, String email, boolean adm, String cpf, String city, String state,
+            String gender, String birth, String phone) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.adm = adm;
+        this.cpf = cpf;
+        this.city = city;
+        this.state = state;
+        this.gender = gender;
+        this.birth = birth;
+        this.phone = phone;
+    }
+
     // Getters
     public String getId() {
         return id;

@@ -47,7 +47,9 @@ public class UserController {
         user.setPassword(encodedPassword);
         User savedUser = userRepository.save(user);
 
-        return new UserDto(savedUser.getId(), savedUser.getName(), savedUser.getEmail(), savedUser.getAdm());
+        return new UserDto(savedUser.getId(), savedUser.getName(), savedUser.getEmail(), savedUser.getAdm(),
+                savedUser.getCpf(), savedUser.getCity(), savedUser.getState(), savedUser.getGender(),
+                savedUser.getBirth(), savedUser.getPhone());
     }
 
     @GetMapping
