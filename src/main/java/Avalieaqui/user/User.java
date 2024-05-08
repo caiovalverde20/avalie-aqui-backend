@@ -22,7 +22,7 @@ public class User {
     private String gender;
     @Indexed(unique = true)
     private String phone;
-    private Date birth;
+    private String birth;
 
     public User() {
     }
@@ -74,7 +74,7 @@ public class User {
         return gender;
     }
 
-    public Date getBirth() {
+    public String getBirth() {
         return birth;
     }
 
@@ -119,7 +119,7 @@ public class User {
         this.gender = gender;
     }
 
-    public void setBirth(Date birth) {
+    public void setBirth(String birth) {
         this.birth = birth;
     }
 

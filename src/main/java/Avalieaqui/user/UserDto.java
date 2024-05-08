@@ -11,7 +11,7 @@ public class UserDto {
     private String city;
     private String state;
     private String gender;
-    private Date birth;
+    private String birth;
     private String phone;
 
     public UserDto() {
@@ -57,7 +57,7 @@ public class UserDto {
         return gender;
     }
 
-    public Date getBirth() {
+    public String getBirth() {
         return birth;
     }
 
@@ -95,7 +95,7 @@ public class UserDto {
         this.gender = gender;
     }
 
-    public void setBirth(Date birth) {
+    public void setBirth(String birth) {
         this.birth = birth;
     }
 
