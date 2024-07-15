@@ -5,6 +5,7 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.Optional;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,9 @@ public class UserService {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     private UserRepository userRepository;
@@ -81,19 +85,51 @@ public class UserService {
         return user;
     }
 
-    public UserDto editUser(String token, UserDto userDto) {
-        String email = jwtUtil.getUsernameFromToken(token);
-        User user = userRepository.findByEmail(email);
-
-        if (user == null || !jwtUtil.validateToken(token, user)) {
+    public UserDto editUser(String token, UserUpdateDto userUpdateDto) {
+        String userId = jwtUtil.getUserIdFromToken(token);
+        if (userId == null) {
             return null;
         }
 
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (!userOptional.isPresent()) {
+            return null;
+        }
+
+        User user = userOptional.get();
+
+        // Verificar se a senha antiga corresponde
+        if (userUpdateDto.getOldPassword() != null
+                && !passwordEncoder.matches(userUpdateDto.getOldPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Senha antiga incorreta.");
+        }
+
+        if (userUpdateDto.getName() != null)
+            user.setName(userUpdateDto.getName());
+        if (userUpdateDto.getEmail() != null)
+            user.setEmail(userUpdateDto.getEmail());
+        if (userUpdateDto.getCpf() != null)
+            user.setCpf(userUpdateDto.getCpf());
+        if (userUpdateDto.getCity() != null)
+            user.setCity(userUpdateDto.getCity());
+        if (userUpdateDto.getState() != null)
+            user.setState(userUpdateDto.getState());
+        if (userUpdateDto.getGender() != null)
+            user.setGender(userUpdateDto.getGender());
+        if (userUpdateDto.getBirth() != null)
+            user.setBirth(userUpdateDto.getBirth());
+        if (userUpdateDto.getPhone() != null)
+            user.setPhone(userUpdateDto.getPhone());
+
+        if (userUpdateDto.getPassword() != null) {
+            String encodedPassword = passwordEncoder.encode(userUpdateDto.getPassword());
+            user.setPassword(encodedPassword);
+        }
+
         userRepository.save(user);
 
-        return new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm());
+        return new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm(),
+                user.getCpf(), user.getCity(), user.getState(), user.getGender(), user.getBirth(), user.getPhone());
     }
 
     public boolean isAdmin(String token) {

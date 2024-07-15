@@ -64,22 +64,8 @@ public class UserController {
         return userDtos;
     }
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable String id) {
-        User user = userRepository.findById(id).orElse(null);
-
-        if (user == null) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Usuário não encontrado.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-        }
-
-        UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm());
-        return ResponseEntity.ok(userDto);
-    }
-
     @PutMapping("/edit")
-    public ResponseEntity<?> editUser(@RequestBody UserDto userDto,
+    public ResponseEntity<?> editUser(@RequestBody UserUpdateDto userUpdateDto,
             @RequestHeader("Authorization") String authorizationHeader) {
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             Map<String, String> errorResponse = new HashMap<>();
@@ -88,18 +74,24 @@ public class UserController {
         }
 
         String token = authorizationHeader.substring(7);
-        UserDto updatedUserDto = userService.editUser(token, userDto);
+        try {
+            UserDto updatedUserDto = userService.editUser(token, userUpdateDto);
 
-        if (updatedUserDto == null) {
+            if (updatedUserDto == null) {
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Token inválido ou usuário não encontrado.");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+
+            Map<String, Object> successResponse = new HashMap<>();
+            successResponse.put("user", updatedUserDto);
+
+            return ResponseEntity.ok(successResponse);
+        } catch (IllegalArgumentException e) {
             Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Token inválido ou usuário não encontrado.");
+            errorResponse.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(errorResponse);
         }
-
-        Map<String, Object> successResponse = new HashMap<>();
-        successResponse.put("user", updatedUserDto);
-
-        return ResponseEntity.ok(successResponse);
     }
 
     @PostMapping("/login")
