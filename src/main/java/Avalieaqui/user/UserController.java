@@ -74,7 +74,9 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
 
-        UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm());
+        UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm(),
+                user.getCpf(), user.getCity(), user.getState(), user.getGender(),
+                user.getBirth(), user.getPhone());
         return ResponseEntity.ok(userDto);
     }
 
