@@ -64,6 +64,20 @@ public class UserController {
         return userDtos;
     }
 
+    @GetMapping("/id/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable String id) {
+        User user = userRepository.findById(id).orElse(null);
+
+        if (user == null) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Usuário não encontrado.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+
+        UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm());
+        return ResponseEntity.ok(userDto);
+    }
+
     @PutMapping("/edit")
     public ResponseEntity<?> editUser(@RequestBody UserUpdateDto userUpdateDto,
             @RequestHeader("Authorization") String authorizationHeader) {
