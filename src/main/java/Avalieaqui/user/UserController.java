@@ -19,8 +19,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.dao.DuplicateKeyException;
 
 import Avalieaqui.auth.JwtUtil;
@@ -75,8 +76,8 @@ public class UserController {
         }
 
         UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm(),
-                user.getCpf(), user.getCity(), user.getState(), user.getGender(),
-                user.getBirth(), user.getPhone());
+                user.getCpf(), user.getCity(), user.getState(), user.getGender(), user.getBirth(),
+                user.getPhone(), user.getProfileImageUrl());
         return ResponseEntity.ok(userDto);
     }
 
@@ -110,6 +111,34 @@ public class UserController {
         }
     }
 
+    @PutMapping("/profile-image")
+    public ResponseEntity<?> updateProfileImage(@RequestPart("image") MultipartFile imageFile,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body("Header incorreto.");
+        }
+
+        String token = authorizationHeader.substring(7);
+        try {
+            UserDto updatedUserDto = userService.updateProfileImage(token, imageFile);
+
+            if (updatedUserDto == null) {
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Token inválido ou usuário não encontrado.");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+
+            Map<String, Object> successResponse = new HashMap<>();
+            successResponse.put("user", updatedUserDto);
+
+            return ResponseEntity.ok(successResponse);
+        } catch (IOException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Erro ao fazer upload da imagem.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody Map<String, String> loginInfo) {
         String userIdentifier = loginInfo.get("user");
@@ -119,7 +148,9 @@ public class UserController {
                 : userRepository.findByPhone(userIdentifier);
 
         if (user != null && bCryptPasswordEncoder.matches(password, user.getPassword())) {
-            UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm());
+            UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm(),
+                    user.getCpf(), user.getCity(), user.getState(), user.getGender(), user.getBirth(),
+                    user.getPhone(), user.getProfileImageUrl());
             String token = jwtUtil.generateToken(user.getEmail());
             user.setToken(token);
             userRepository.save(user);
@@ -141,7 +172,9 @@ public class UserController {
         User loginUser = userService.getUserFromGoogle(tokenGoogle);
         try {
             User user = userRepository.findByEmail(loginUser.getEmail());
-            UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm());
+            UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm(),
+                    user.getCpf(), user.getCity(), user.getState(), user.getGender(), user.getBirth(),
+                    user.getPhone(), user.getProfileImageUrl());
 
             String token = jwtUtil.generateToken(user.getEmail());
             user.setToken(token);

@@ -8,12 +8,14 @@ import java.util.Optional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.json.gson.GsonFactory;
 
+import Avalieaqui.StorageService;
 import Avalieaqui.auth.JwtUtil;
 
 import com.google.api.client.http.apache.v2.*;
@@ -25,6 +27,9 @@ public class UserService {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private StorageService storageService;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -83,6 +88,27 @@ public class UserService {
             return null;
         }
         return user;
+    }
+
+    public UserDto updateProfileImage(String token, MultipartFile profileImage) throws IOException {
+        String userId = jwtUtil.getUserIdFromToken(token);
+        if (userId == null) {
+            return null;
+        }
+
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (!userOptional.isPresent()) {
+            return null;
+        }
+
+        User user = userOptional.get();
+        String imageUrl = storageService.uploadFile(profileImage);
+        user.setProfileImageUrl(imageUrl);
+        userRepository.save(user);
+
+        return new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAdm(),
+                user.getCpf(), user.getCity(), user.getState(), user.getGender(), user.getBirth(), user.getPhone(),
+                user.getProfileImageUrl());
     }
 
     public UserDto editUser(String token, UserUpdateDto userUpdateDto) {

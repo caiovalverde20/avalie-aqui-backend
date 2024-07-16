@@ -23,6 +23,7 @@ public class User {
     @Indexed(unique = true)
     private String phone;
     private String birth;
+    private String profileImageUrl;
 
     public User() {
     }
@@ -82,6 +83,10 @@ public class User {
         return phone;
     }
 
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
     // Setters
     public void setId(String id) {
         this.id = id;
@@ -125,5 +130,9 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 }
