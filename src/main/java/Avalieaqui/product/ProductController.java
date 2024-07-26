@@ -184,12 +184,14 @@ public class ProductController {
     }
 
     @GetMapping("/search/{term}")
-    public ResponseEntity<List<Product>> searchProductsByTerm(@PathVariable String term) {
+    public ResponseEntity<?> searchProductsByTerm(@PathVariable String term) {
         String sanitizedTerm = term.trim().replaceAll("\\s+", ".*");
 
         List<Product> products = productRepository.findByNameContainingIgnoreCase(".*" + sanitizedTerm + ".*");
         if (products.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "No products found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
         return ResponseEntity.ok(products);
     }
