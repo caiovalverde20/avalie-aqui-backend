@@ -98,9 +98,20 @@ public class ReviewService {
         return reviews.stream().map(review -> {
             User user = userRepository.findById(review.getUserId()).orElse(null);
             String userName = user != null ? user.getName() : "Unknown";
-            return new ReviewDto(review.getId(), review.getUserId(), userName, review.getProductId(), review.getStars(),
-                    review.getTitle(), review.getComment(), review.getCreatedAt(), review.getLikes(),
-                    review.getDislikes());
+            String profileImageUrl = user != null ? user.getProfileImageUrl() : null;
+            return new ReviewDto(
+                    review.getId(),
+                    review.getUserId(),
+                    userName,
+                    review.getProductId(),
+                    review.getStars(),
+                    review.getTitle(),
+                    review.getComment(),
+                    review.getCreatedAt(),
+                    review.getLikes(),
+                    review.getDislikes(),
+                    profileImageUrl);
         }).collect(Collectors.toList());
     }
+
 }

@@ -14,9 +14,10 @@ public class ReviewDto {
     private LocalDateTime createdAt;
     private Set<String> likes;
     private Set<String> dislikes;
+    private String profileImageUrl;
 
     public ReviewDto(String id, String userId, String userName, String productId, int stars, String title,
-            String comment, LocalDateTime createdAt, Set<String> likes, Set<String> dislikes) {
+            String comment, LocalDateTime createdAt, Set<String> likes, Set<String> dislikes, String profileImageUrl) {
         this.id = id;
         this.userId = userId;
         this.userName = userName;
@@ -27,6 +28,7 @@ public class ReviewDto {
         this.createdAt = createdAt;
         this.likes = likes;
         this.dislikes = dislikes;
+        this.profileImageUrl = profileImageUrl;
     }
 
     // Getters
@@ -68,5 +70,9 @@ public class ReviewDto {
 
     public Set<String> getDislikes() {
         return dislikes;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
     }
 }
