@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -18,12 +19,15 @@ public class EmailController {
     private EmailService emailService;
 
     @PostMapping("/send")
-    public ResponseEntity<String> sendEmail(@RequestBody Map<String, String> request) {
+    public ResponseEntity<Map<String, String>> sendEmail(@RequestBody Map<String, String> request) {
         String subject = request.get("subject");
         String body = request.get("body");
 
         emailService.sendEmail("avalieaqui23.2@gmail.com", subject, body);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Email enviado com sucesso!");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Email enviado com sucesso!");
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
